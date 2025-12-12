@@ -2,10 +2,10 @@ import scrapy
 
 class CinemarkMoviesSpider(scrapy.Spider):
     name = "cinemark_movies"
-    allowed_domains = ["bff.cinemark-peru.com"]
+    allowed_domains = ["cinemark-peru.com", "bff.cinemark-peru.com"]
 
     start_urls = [
-        "https://bff.cinemark-peru.com/api/cinema/movies"
+        "https://bff.cinemark-peru.com/api/cinema/movies?theater=659"
     ]
 
     custom_settings = {
@@ -22,12 +22,13 @@ class CinemarkMoviesSpider(scrapy.Spider):
 
         movies = data.get("result", {}).get("movies", [])
 
+        self.logger.info(f"Películas encontradas: {len(movies)}")
+
         for movie in movies:
             yield {
                 "title": movie.get("title"),
                 "slug": movie.get("slug"),
-                "rating": movie.get("rating"),
                 "duration": movie.get("duration"),
+                "rating": movie.get("rating"),
                 "formats": movie.get("formats"),
-                "poster": movie.get("poster"),
             }
