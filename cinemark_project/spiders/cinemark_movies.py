@@ -20,14 +20,14 @@ class CinemarkMoviesSpider(scrapy.Spider):
     def parse(self, response):
         data = response.json()
 
-        movies = data if isinstance(data, list) else data.get("movies", [])
+        movies = data.get("result", {}).get("movies", [])
 
-        for m in movies:
+        for movie in movies:
             yield {
-                "title": m.get("title"),
-                "slug": m.get("slug"),
-                "duration": m.get("duration"),
-                "rating": m.get("rating"),
-                "formats": m.get("formats"),
-                "poster": m.get("poster"),
+                "title": movie.get("title"),
+                "slug": movie.get("slug"),
+                "rating": movie.get("rating"),
+                "duration": movie.get("duration"),
+                "formats": movie.get("formats"),
+                "poster": movie.get("poster"),
             }
