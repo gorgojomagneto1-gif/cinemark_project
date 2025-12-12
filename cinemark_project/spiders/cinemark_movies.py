@@ -2,38 +2,36 @@ import scrapy
 
 class CinemarkMoviesSpider(scrapy.Spider):
     name = "cinemark_movies"
-    allowed_domains = ["bff.cinemark-peru.com"]
 
-    start_urls = [
-        "https://bff.cinemark-peru.com/api/cinema/movies?theater=659"
-    ]
+    handle_httpstatus_list = [403]
 
-    custom_settings = {
-        "USER_AGENT": "Mozilla/5.0",
-        "DEFAULT_REQUEST_HEADERS": {
-            "accept": "application/json, text/plain, */*",
+    def __init__(self, theater="659", *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.theater = theater
+
+    def start_requests(self):
+        url = f"https://bff.cinemark-peru.com/api/cinema/movies?theater={self.theater}"
+
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "accept-language": "en-US,en;q=0.9",
+            "country": "PE",
             "origin": "https://www.cinemark-peru.com",
             "referer": "https://www.cinemark-peru.com/",
-        },
-    }
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        }
+
+        yield scrapy.Request(url, headers=headers, callback=self.parse, dont_filter=True)
 
     def parse(self, response):
+        if response.status == 403:
+            self.logger.error("403 body (primeros 300 chars): %s", response.text[:300])
+            return
+
         data = response.json()
 
-        movies = None
-        if isinstance(data, list):
-            movies = data
-        elif isinstance(data, dict):
-            for k in ("movies", "data", "items"):
-                if isinstance(data.get(k), list):
-                    movies = data[k]
-                    break
-            if not movies and isinstance(data.get("result"), dict):
-                r = data["result"]
-                for k in ("movies", "data", "items"):
-                    if isinstance(r.get(k), list):
-                        movies = r[k]
-                        break
+        movies = data.get("movies", data) if isinstance(data, dict) else data
 
         if not movies:
             yield {"raw": data}
@@ -42,30 +40,10 @@ class CinemarkMoviesSpider(scrapy.Spider):
         self.logger.info(f"Películas encontradas: {len(movies)}")
 
         for m in movies:
-            slug = m.get("slug")
-            item = {
-                "id": m.get("id") or m.get("movieId"),
-                "corporateId": m.get("movieCorporateId"),
-                "title": m.get("title") or m.get("name"),
-                "slug": slug,
+            yield {
+                "title": m.get("title"),
+                "slug": m.get("slug"),
+                "corporateId": m.get("corporateId") or m.get("id"),
                 "rating": m.get("rating"),
                 "runtime": m.get("runtime") or m.get("duration"),
-                "releaseDate": m.get("releaseDate"),
             }
-            yield item
-
-            if slug:
-                url = f"https://bff.cinemark-peru.com/api/cinema/movies/slug/{slug}"
-                yield scrapy.Request(url, callback=self.parse_detail, meta={"basic": item})
-
-    def parse_detail(self, response):
-        basic = response.meta["basic"]
-        d = response.json()
-
-        yield {
-            **basic,
-            "synopsis": d.get("synopsis") or d.get("description"),
-            "genres": d.get("genres"),
-            "poster": d.get("poster") or d.get("image"),
-            "trailer": d.get("trailer"),
-        }
