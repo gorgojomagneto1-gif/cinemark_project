@@ -48,21 +48,25 @@ FEED_EXPORT_ENCODING = "utf-8"
 # ==============================================================================
 # ZYTE API CONFIGURATION
 # ==============================================================================
-# These settings enable scrapy-zyte-api integration
-# The API key will be read from ZYTE_API_KEY environment variable in Scrapy Cloud
+# Se activa solo si existe la variable de entorno ZYTE_API_KEY
+import os
 
-# Download handler for Zyte API
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_zyte_api.ScrapyZyteAPIDownloadHandler",
-    "https": "scrapy_zyte_api.ScrapyZyteAPIDownloadHandler",
-}
+ZYTE_API_KEY = os.getenv("ZYTE_API_KEY")
 
-# Zyte API settings
-ZYTE_API_TRANSPARENT_MODE = True  # Makes all requests go through Zyte API automatically
-ZYTE_API_ENABLED = True
+if ZYTE_API_KEY:
+    # Download handler for Zyte API
+    DOWNLOAD_HANDLERS = {
+        "http": "scrapy_zyte_api.ScrapyZyteAPIDownloadHandler",
+        "https": "scrapy_zyte_api.ScrapyZyteAPIDownloadHandler",
+    }
 
-# Retry configuration for Zyte API
-ZYTE_API_RETRY_POLICY = "scrapy_zyte_api.retry.aggressive_retry_policy"
+    # Zyte API settings
+    ZYTE_API_TRANSPARENT_MODE = True
+    ZYTE_API_ENABLED = True
+    ZYTE_API_RETRY_POLICY = "scrapy_zyte_api.retry.aggressive_retry_policy"
+else:
+    # Fallback to standard Scrapy
+    pass
 
 # Logging
 LOG_LEVEL = "INFO"
