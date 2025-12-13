@@ -1,0 +1,13 @@
+# ==============================================================================
+# DEPENDENCIAS PARA ZYTE SCRAPY CLOUD
+# ==============================================================================
+# Estas dependencias se instalarán automáticamente al hacer deploy
+
+# Framework principal
+Scrapy>=2.11.0
+
+# Integración con Zyte API (REQUERIDO para usar Zyte)
+scrapy-zyte-api>=0.22.0
+
+# Utilidades adicionales
+itemadapter>=0.8.0

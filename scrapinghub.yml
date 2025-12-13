@@ -1,0 +1,30 @@
+# ==============================================================================
+# ZYTE SCRAPY CLOUD CONFIGURATION
+# ==============================================================================
+# Este archivo configura el proyecto para deploy en Zyte Scrapy Cloud
+#
+# IMPORTANTE: Reemplaza YOUR_PROJECT_ID con el ID de tu proyecto en Zyte
+#             El ID lo encuentras en: https://app.zyte.com/scrapy-cloud/
+#             Es el número que aparece después de /p/ en la URL
+
+project: YOUR_PROJECT_ID
+
+# Archivo de requirements.txt con las dependencias
+requirements:
+  file: requirements.txt
+
+# Stack de Python a usar (usar python:3.11 para compatibilidad)
+stack: scrapy:2.11-py311
+
+# ==============================================================================
+# CONFIGURACIÓN ADICIONAL
+# ==============================================================================
+
+# Addons disponibles (descomenta si necesitas):
+# addons:
+#   - addon: Autothrottle
+#   - addon: scheduled_jobs
+
+# Variables de entorno (las secrets deberían ir en la UI de Zyte)
+# env:
+#   - CUSTOM_VARIABLE=value
