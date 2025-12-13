@@ -14,8 +14,8 @@ project: 840533
 requirements:
   file: requirements.txt
 
-# Stack de Python a usar (usar python:3.11 para compatibilidad)
-stack: scrapy:2.11-py311
+# Stack de Python a usar
+stack: scrapy:2.11
 
 # ==============================================================================
 # CONFIGURACIÓN ADICIONAL
