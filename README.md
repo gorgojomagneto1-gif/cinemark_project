@@ -50,6 +50,24 @@ Una vez conectado GitHub:
 | Spider | Descripción | Comando |
 |--------|-------------|---------|
 | `cinemark_movies` | Todas las películas | `scrapy crawl cinemark_movies` |
+
+### Argumentos del Spider (Movies)
+
+Puedes filtrar los resultados pasando argumentos:
+
+- **Por Cine**: `theater=659` (ID del cine)
+- **Por Estado**: `status=SHOWING_NOW` (o `COMING_SOON`, `PRESALE`)
+
+**Ejemplo local:**
+```bash
+scrapy crawl cinemark_movies -a theater=659 -a status=SHOWING_NOW
+```
+
+**Ejemplo en Zyte (Arguments):**
+```text
+theater=659
+status=SHOWING_NOW
+```
 | `cinemark_theaters` | Todos los cines | `scrapy crawl cinemark_theaters` |
 | `cinemark_showtimes` | Horarios de funciones | `scrapy crawl cinemark_showtimes` |
 
